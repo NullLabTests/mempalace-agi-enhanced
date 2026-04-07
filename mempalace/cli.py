@@ -373,3 +373,33 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+# ====================== AGI CLI COMMANDS (2026) ======================
+
+def cmd_agi_prune(args):
+    from .knowledge_graph import KnowledgeGraph
+    kg = KnowledgeGraph()
+    kg.prune_forgetting()
+    print("AGI Prune complete")
+
+def cmd_agi_verify(args):
+    from .knowledge_graph import KnowledgeGraph
+    kg = KnowledgeGraph()
+    kg.verify_triple_schema(
+        getattr(args, "subject", "test"),
+        getattr(args, "predicate", "test"),
+        getattr(args, "object", "test")
+    )
+
+def cmd_agi_consolidate(args):
+    from .knowledge_graph import KnowledgeGraph
+    kg = KnowledgeGraph()
+    kg.continuum_consolidate()
+    print("AGI Continuum consolidation done")
+
+def cmd_agi_snapshot(args):
+    from .knowledge_graph import KnowledgeGraph
+    kg = KnowledgeGraph()
+    kg.agi_snapshot(getattr(args, "name", "global"))
+    print("AGI Snapshot created")
+

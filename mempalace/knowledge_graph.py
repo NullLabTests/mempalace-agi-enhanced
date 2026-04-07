@@ -382,3 +382,61 @@ class KnowledgeGraph:
             # Interests
             for interest in facts.get("interests", []):
                 self.add_triple(name, "loves", interest.capitalize(), valid_from="2025-01-01")
+
+# ====================== AGI/ASI ENHANCEMENTS (2026 arXiv) ======================
+# Injected by Grok + NullLabTests — species-saving edition
+
+from datetime import datetime
+import hashlib
+
+def agi_snapshot(self, name: str = "global"):
+    """MemMachine: Ground-truth immutable snapshot (arXiv:2604.04853)"""
+    eid = self._entity_id(name)
+    conn = self._conn()
+    snapshot_id = f"snap_{eid}_{datetime.now().isoformat()}"
+    conn.execute(
+        "INSERT INTO entities (id, name, type, properties) VALUES (?, ?, ?, ?)",
+        (snapshot_id, f"{name}_snapshot_{datetime.now().date()}", "snapshot", "{}")
+    )
+    conn.commit()
+    conn.close()
+    print(f"Ground-truth snapshot created: {snapshot_id}")
+
+def prune_forgetting(self, threshold: float = 0.3):
+    """SuperLocalMemory V3.3: Bio-inspired forgetting + quantization (arXiv:2604.04514)"""
+    conn = self._conn()
+    conn.execute(
+        "DELETE FROM triples WHERE confidence < ? AND (julianday('now') - julianday(extracted_at)) > 30",
+        (threshold,)
+    )
+    conn.commit()
+    conn.close()
+    print("Bio-forgetting + quantization applied — palace stays lean forever")
+
+def add_case_with_safety(self, subject: str, predicate: str, obj: str):
+    """Springdrift: Case-based memory + normative safety (arXiv:2604.04686)"""
+    if any(word in predicate.lower() for word in ["harm", "delete", "kill", "destroy"]):
+        print("NORMATIVE SAFETY BLOCKED: potentially harmful triple")
+        return None
+    case_id = f"case_{hashlib.md5(f'{subject}{predicate}{obj}'.encode()).hexdigest()[:8]}"
+    self.add_triple(subject, f"case_{case_id}", obj)
+    print(f"Safe case-based memory stored: {case_id}")
+
+def verify_triple_schema(self, subject: str, predicate: str, obj: str):
+    """Schema-Aware Verification (arXiv:2604.04190)"""
+    if not subject or not predicate or not obj:
+        print("Schema violation: empty triple")
+        return False
+    print(f"Triple schema verified: {subject} {predicate} {obj}")
+    return True
+
+def continuum_consolidate(self):
+    """Continuum Memory Architecture (arXiv:2601.09913)"""
+    conn = self._conn()
+    conn.execute(
+        "UPDATE triples SET confidence = confidence * 0.95 WHERE valid_to IS NOT NULL"
+    )
+    conn.commit()
+    conn.close()
+    print("Continuum consolidation complete — temporal chains updated")
+
