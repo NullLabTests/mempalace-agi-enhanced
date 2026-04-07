@@ -1,3 +1,14 @@
+
+# === LEARNING STATE ===
+import random
+
+ACTION_STATS = {
+    "idle": {"count": 1, "value": 0.0},
+    "consolidate": {"count": 1, "value": 0.0},
+}
+
+EPSILON = 0.2  # exploration rate
+
 import time
 import random
 
