@@ -40,18 +40,3 @@ def run():
 
 if __name__ == "__main__":
     run()
-
-# ===== META CRITIC INJECTION =====
-try:
-    from mempalace.meta_critic import MetaCritic
-    critic = MetaCritic()
-
-    def critic_hook(event):
-        result = critic.evaluate(event)
-        print(f"[CRITIC] score={result['score']} total={critic.summary()}")
-
-except Exception as e:
-    print("[CRITIC ERROR]", e)
-    def critic_hook(event):
-        pass
-# =================================
