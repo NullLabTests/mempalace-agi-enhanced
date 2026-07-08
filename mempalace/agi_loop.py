@@ -1,13 +1,17 @@
-import time, sqlite3
+import sqlite3
+import time
 from .knowledge_graph import KnowledgeGraph
 from .agent_core import AgentCore
 
 def stats():
     conn = sqlite3.connect("mempalace.db")
     c = conn.cursor()
-    c.execute("SELECT COUNT(*) FROM triples"); total = c.fetchone()[0] or 1
-    c.execute("SELECT COUNT(*) FROM triples WHERE confidence < 0.3"); low = c.fetchone()[0]
-    c.execute("SELECT COUNT(*) FROM triples WHERE valid_to IS NOT NULL"); stale = c.fetchone()[0]
+    c.execute("SELECT COUNT(*) FROM triples")
+    total = c.fetchone()[0] or 1
+    c.execute("SELECT COUNT(*) FROM triples WHERE confidence < 0.3")
+    low = c.fetchone()[0]
+    c.execute("SELECT COUNT(*) FROM triples WHERE valid_to IS NOT NULL")
+    stale = c.fetchone()[0]
     conn.close()
     return {
         "triple_count": total,
