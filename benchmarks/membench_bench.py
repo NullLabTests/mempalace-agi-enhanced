@@ -215,7 +215,9 @@ def load_membench(data_dir: str, categories=None, topic="movie", limit=0):
             if topic and t not in (topic, "roles", "events"):
                 continue
             for item in topic_items:
-                turns = item.get("message_list", [])  # pass full message_list (all sessions)
+                turns = item.get(
+                    "message_list", []
+                )  # pass full message_list (all sessions)
                 qa = item.get("QA", {})
                 if not turns or not qa:
                     continue
@@ -303,7 +305,13 @@ def index_turns(collection, message_list, item_key: str):
 
 
 def run_membench(
-    data_dir, categories=None, topic="movie", top_k=5, limit=0, mode="raw", out_file=None
+    data_dir,
+    categories=None,
+    topic="movie",
+    top_k=5,
+    limit=0,
+    mode="raw",
+    out_file=None,
 ):
     """Run MemBench retrieval evaluation."""
 
@@ -381,7 +389,9 @@ def run_membench(
             if isinstance(step, list) and len(step) >= 1:
                 target_sids.add(step[0])  # first element is the turn sid/global index
 
-        hit = bool(target_sids & set(retrieved_sids)) or bool(target_sids & set(retrieved_global))
+        hit = bool(target_sids & set(retrieved_sids)) or bool(
+            target_sids & set(retrieved_global)
+        )
         if hit:
             total_hit += 1
             by_cat[item["category"]]["hit_at_k"] += 1
@@ -438,9 +448,13 @@ if __name__ == "__main__":
         help="Run a single category (default: all)",
     )
     parser.add_argument(
-        "--topic", default="movie", help="Topic filter: movie, food, book (default: movie)"
+        "--topic",
+        default="movie",
+        help="Topic filter: movie, food, book (default: movie)",
     )
-    parser.add_argument("--top-k", type=int, default=5, help="Retrieval top-k (default: 5)")
+    parser.add_argument(
+        "--top-k", type=int, default=5, help="Retrieval top-k (default: 5)"
+    )
     parser.add_argument("--limit", type=int, default=0, help="Limit items (0 = all)")
     parser.add_argument(
         "--mode",
@@ -448,7 +462,9 @@ if __name__ == "__main__":
         default="hybrid",
         help="Retrieval mode (default: hybrid)",
     )
-    parser.add_argument("--out", default=None, help="Output JSON file (default: auto-named)")
+    parser.add_argument(
+        "--out", default=None, help="Output JSON file (default: auto-named)"
+    )
     args = parser.parse_args()
 
     if not args.out:

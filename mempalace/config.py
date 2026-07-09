@@ -57,8 +57,26 @@ DEFAULT_HALL_KEYWORDS = {
         "server",
     ],
     "identity": ["identity", "name", "who am i", "persona", "self"],
-    "family": ["family", "kids", "children", "daughter", "son", "parent", "mother", "father"],
-    "creative": ["game", "gameplay", "player", "app", "design", "art", "music", "story"],
+    "family": [
+        "family",
+        "kids",
+        "children",
+        "daughter",
+        "son",
+        "parent",
+        "mother",
+        "father",
+    ],
+    "creative": [
+        "game",
+        "gameplay",
+        "player",
+        "app",
+        "design",
+        "art",
+        "music",
+        "story",
+    ],
 }
 
 
@@ -92,7 +110,9 @@ class MempalaceConfig:
     @property
     def palace_path(self):
         """Path to the memory palace data directory."""
-        env_val = os.environ.get("MEMPALACE_PALACE_PATH") or os.environ.get("MEMPAL_PALACE_PATH")
+        env_val = os.environ.get("MEMPALACE_PALACE_PATH") or os.environ.get(
+            "MEMPAL_PALACE_PATH"
+        )
         if env_val:
             return env_val
         return self._file_config.get("palace_path", DEFAULT_PALACE_PATH)

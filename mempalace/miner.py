@@ -199,7 +199,13 @@ def file_already_mined(collection, source_file: str) -> bool:
 
 
 def add_drawer(
-    collection, wing: str, room: str, content: str, source_file: str, chunk_index: int, agent: str
+    collection,
+    wing: str,
+    room: str,
+    content: str,
+    source_file: str,
+    chunk_index: int,
+    agent: str,
 ):
     """Add one drawer to the palace."""
     drawer_id = f"drawer_{wing}_{room}_{hashlib.md5((source_file + str(chunk_index)).encode()).hexdigest()[:16]}"
@@ -326,7 +332,9 @@ def mine(
     config = load_config(project_dir)
 
     wing = wing_override or config["wing"]
-    rooms = config.get("rooms", [{"name": "general", "description": "All project files"}])
+    rooms = config.get(
+        "rooms", [{"name": "general", "description": "All project files"}]
+    )
 
     files = scan_project(project_dir)
     if limit > 0:

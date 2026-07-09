@@ -313,13 +313,21 @@ def tool_kg_query(entity: str, as_of: str = None, direction: str = "both"):
 
 
 def tool_kg_add(
-    subject: str, predicate: str, object: str, valid_from: str = None, source_closet: str = None
+    subject: str,
+    predicate: str,
+    object: str,
+    valid_from: str = None,
+    source_closet: str = None,
 ):
     """Add a relationship to the knowledge graph."""
     triple_id = _kg.add_triple(
         subject, predicate, object, valid_from=valid_from, source_closet=source_closet
     )
-    return {"success": True, "triple_id": triple_id, "fact": f"{subject} → {predicate} → {object}"}
+    return {
+        "success": True,
+        "triple_id": triple_id,
+        "fact": f"{subject} → {predicate} → {object}",
+    }
 
 
 def tool_kg_invalidate(subject: str, predicate: str, object: str, ended: str = None):
@@ -409,7 +417,11 @@ def tool_diary_read(agent_name: str, last_n: int = 10):
         )
 
         if not results["ids"]:
-            return {"agent": agent_name, "entries": [], "message": "No diary entries yet."}
+            return {
+                "agent": agent_name,
+                "entries": [],
+                "message": "No diary entries yet.",
+            }
 
         # Combine and sort by timestamp
         entries = []
@@ -454,7 +466,10 @@ TOOLS = {
         "input_schema": {
             "type": "object",
             "properties": {
-                "wing": {"type": "string", "description": "Wing to list rooms for (optional)"},
+                "wing": {
+                    "type": "string",
+                    "description": "Wing to list rooms for (optional)",
+                },
             },
         },
         "handler": tool_list_rooms,
@@ -496,12 +511,18 @@ TOOLS = {
         "input_schema": {
             "type": "object",
             "properties": {
-                "subject": {"type": "string", "description": "The entity doing/being something"},
+                "subject": {
+                    "type": "string",
+                    "description": "The entity doing/being something",
+                },
                 "predicate": {
                     "type": "string",
                     "description": "The relationship type (e.g. 'loves', 'works_on', 'daughter_of')",
                 },
-                "object": {"type": "string", "description": "The entity being connected to"},
+                "object": {
+                    "type": "string",
+                    "description": "The entity being connected to",
+                },
                 "valid_from": {
                     "type": "string",
                     "description": "When this became true (YYYY-MM-DD, optional)",
@@ -627,8 +648,14 @@ TOOLS = {
                     "type": "string",
                     "description": "Verbatim content to store — exact words, never summarized",
                 },
-                "source_file": {"type": "string", "description": "Where this came from (optional)"},
-                "added_by": {"type": "string", "description": "Who is filing this (default: mcp)"},
+                "source_file": {
+                    "type": "string",
+                    "description": "Where this came from (optional)",
+                },
+                "added_by": {
+                    "type": "string",
+                    "description": "Who is filing this (default: mcp)",
+                },
             },
             "required": ["wing", "room", "content"],
         },
@@ -639,7 +666,10 @@ TOOLS = {
         "input_schema": {
             "type": "object",
             "properties": {
-                "drawer_id": {"type": "string", "description": "ID of the drawer to delete"},
+                "drawer_id": {
+                    "type": "string",
+                    "description": "ID of the drawer to delete",
+                },
             },
             "required": ["drawer_id"],
         },
@@ -711,7 +741,11 @@ def handle_request(request):
             "id": req_id,
             "result": {
                 "tools": [
-                    {"name": n, "description": t["description"], "inputSchema": t["input_schema"]}
+                    {
+                        "name": n,
+                        "description": t["description"],
+                        "inputSchema": t["input_schema"],
+                    }
                     for n, t in TOOLS.items()
                 ]
             },
@@ -730,11 +764,17 @@ def handle_request(request):
             return {
                 "jsonrpc": "2.0",
                 "id": req_id,
-                "result": {"content": [{"type": "text", "text": json.dumps(result, indent=2)}]},
+                "result": {
+                    "content": [{"type": "text", "text": json.dumps(result, indent=2)}]
+                },
             }
         except Exception as e:
             logger.error(f"Tool error in {tool_name}: {e}")
-            return {"jsonrpc": "2.0", "id": req_id, "error": {"code": -32000, "message": str(e)}}
+            return {
+                "jsonrpc": "2.0",
+                "id": req_id,
+                "error": {"code": -32000, "message": str(e)},
+            }
 
     return {
         "jsonrpc": "2.0",

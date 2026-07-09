@@ -14,7 +14,10 @@ def test_plain_text():
 
 
 def test_claude_json():
-    data = [{"role": "user", "content": "Hi"}, {"role": "assistant", "content": "Hello"}]
+    data = [
+        {"role": "user", "content": "Hi"},
+        {"role": "assistant", "content": "Hello"},
+    ]
     f = tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False)
     json.dump(data, f)
     f.close()

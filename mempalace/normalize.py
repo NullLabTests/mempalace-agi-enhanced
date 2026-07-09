@@ -144,7 +144,9 @@ def _try_chatgpt_json(data) -> Optional[str]:
                 role = msg.get("author", {}).get("role", "")
                 content = msg.get("content", {})
                 parts = content.get("parts", []) if isinstance(content, dict) else []
-                text = " ".join(str(p) for p in parts if isinstance(p, str) and p).strip()
+                text = " ".join(
+                    str(p) for p in parts if isinstance(p, str) and p
+                ).strip()
                 if role == "user" and text:
                     messages.append(("user", text))
                 elif role == "assistant" and text:

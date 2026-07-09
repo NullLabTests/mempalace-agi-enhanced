@@ -101,7 +101,9 @@ def discover_files(category, cache_dir):
         with urllib.request.urlopen(req, timeout=15) as resp:
             files = json.loads(resp.read())
             paths = [
-                f["path"].split(f"{category}/")[1] for f in files if f["path"].endswith(".json")
+                f["path"].split(f"{category}/")[1]
+                for f in files
+                if f["path"].endswith(".json")
             ]
             os.makedirs(os.path.dirname(cache_path), exist_ok=True)
             with open(cache_path, "w") as f:
@@ -140,7 +142,9 @@ def load_evidence_items(categories, limit, cache_dir):
                     items_for_cat.append(item)
 
         all_items.extend(items_for_cat[:limit])
-        print(f"  {CATEGORIES.get(category, category)}: {len(items_for_cat[:limit])} items loaded")
+        print(
+            f"  {CATEGORIES.get(category, category)}: {len(items_for_cat[:limit])} items loaded"
+        )
 
     return all_items
 
@@ -285,7 +289,9 @@ def run_benchmark(categories, limit_per_cat, top_k, mode, cache_dir, out_file):
     print(f"\n{'=' * 60}")
     print(f"  RESULTS — MemPal ({mode} mode, top-{top_k})")
     print(f"{'=' * 60}")
-    print(f"  Time:        {elapsed:.1f}s ({elapsed / max(len(items), 1):.2f}s per item)")
+    print(
+        f"  Time:        {elapsed:.1f}s ({elapsed / max(len(items), 1):.2f}s per item)"
+    )
     print(f"  Items:       {len(items)}")
     print(f"  Avg Recall:  {avg_recall:.3f}")
 
@@ -300,8 +306,12 @@ def run_benchmark(categories, limit_per_cat, top_k, mode, cache_dir, out_file):
     perfect_total = sum(1 for r in all_recall if r >= 1.0)
     zero_total = sum(1 for r in all_recall if r == 0)
     print("\n  DISTRIBUTION:")
-    print(f"    Perfect (1.0):  {perfect_total:4} ({perfect_total / len(all_recall) * 100:.1f}%)")
-    print(f"    Zero (0.0):     {zero_total:4} ({zero_total / len(all_recall) * 100:.1f}%)")
+    print(
+        f"    Perfect (1.0):  {perfect_total:4} ({perfect_total / len(all_recall) * 100:.1f}%)"
+    )
+    print(
+        f"    Zero (0.0):     {zero_total:4} ({zero_total / len(all_recall) * 100:.1f}%)"
+    )
 
     print(f"\n{'=' * 60}\n")
 
@@ -317,8 +327,12 @@ def run_benchmark(categories, limit_per_cat, top_k, mode, cache_dir, out_file):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="MemPal × ConvoMem Benchmark")
-    parser.add_argument("--limit", type=int, default=100, help="Items per category (default: 100)")
-    parser.add_argument("--top-k", type=int, default=10, help="Top-k retrieval (default: 10)")
+    parser.add_argument(
+        "--limit", type=int, default=100, help="Items per category (default: 100)"
+    )
+    parser.add_argument(
+        "--top-k", type=int, default=10, help="Top-k retrieval (default: 10)"
+    )
     parser.add_argument(
         "--category",
         choices=list(CATEGORIES.keys()) + ["all"],
@@ -331,7 +345,9 @@ if __name__ == "__main__":
         default="raw",
         help="Retrieval mode",
     )
-    parser.add_argument("--cache-dir", default="/tmp/convomem_cache", help="Cache directory")
+    parser.add_argument(
+        "--cache-dir", default="/tmp/convomem_cache", help="Cache directory"
+    )
     parser.add_argument("--out", default=None, help="Output JSON file")
     args = parser.parse_args()
 
@@ -343,4 +359,6 @@ if __name__ == "__main__":
     if not args.out:
         args.out = f"benchmarks/results_convomem_{args.mode}_top{args.top_k}_{datetime.now().strftime('%Y%m%d_%H%M')}.json"
 
-    run_benchmark(categories, args.limit, args.top_k, args.mode, args.cache_dir, args.out)
+    run_benchmark(
+        categories, args.limit, args.top_k, args.mode, args.cache_dir, args.out
+    )

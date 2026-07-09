@@ -1,5 +1,6 @@
 import random
 
+
 class BehaviorController:
     def __init__(self):
         self.mode = "normal"

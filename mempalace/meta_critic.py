@@ -1,5 +1,6 @@
 import time
 
+
 class MetaCritic:
     def __init__(self):
         self.history = []
@@ -16,11 +17,7 @@ class MetaCritic:
         if "loop" in event.lower():
             score += 1
 
-        result = {
-            "event": event.strip(),
-            "score": score,
-            "ts": time.time()
-        }
+        result = {"event": event.strip(), "score": score, "ts": time.time()}
 
         self.history.append(result)
         return result

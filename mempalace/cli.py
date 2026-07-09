@@ -46,7 +46,11 @@ def cmd_init(args):
     if files:
         print(f"  Reading {len(files)} files...")
         detected = detect_entities(files)
-        total = len(detected["people"]) + len(detected["projects"]) + len(detected["uncertain"])
+        total = (
+            len(detected["people"])
+            + len(detected["projects"])
+            + len(detected["uncertain"])
+        )
         if total > 0:
             confirmed = confirm_entities(detected, yes=getattr(args, "yes", False))
             # Save confirmed entities to <project>/entities.json for the miner
@@ -64,7 +68,11 @@ def cmd_init(args):
 
 
 def cmd_mine(args):
-    palace_path = os.path.expanduser(args.palace) if args.palace else MempalaceConfig().palace_path
+    palace_path = (
+        os.path.expanduser(args.palace)
+        if args.palace
+        else MempalaceConfig().palace_path
+    )
 
     if args.mode == "convos":
         from .convo_miner import mine_convos
@@ -94,7 +102,11 @@ def cmd_mine(args):
 def cmd_search(args):
     from .searcher import search
 
-    palace_path = os.path.expanduser(args.palace) if args.palace else MempalaceConfig().palace_path
+    palace_path = (
+        os.path.expanduser(args.palace)
+        if args.palace
+        else MempalaceConfig().palace_path
+    )
     search(
         query=args.query,
         palace_path=palace_path,
@@ -108,7 +120,11 @@ def cmd_wakeup(args):
     """Show L0 (identity) + L1 (essential story) — the wake-up context."""
     from .layers import MemoryStack
 
-    palace_path = os.path.expanduser(args.palace) if args.palace else MempalaceConfig().palace_path
+    palace_path = (
+        os.path.expanduser(args.palace)
+        if args.palace
+        else MempalaceConfig().palace_path
+    )
     stack = MemoryStack(palace_path=palace_path)
 
     text = stack.wake_up(wing=args.wing)
@@ -143,7 +159,11 @@ def cmd_split(args):
 def cmd_status(args):
     from .miner import status
 
-    palace_path = os.path.expanduser(args.palace) if args.palace else MempalaceConfig().palace_path
+    palace_path = (
+        os.path.expanduser(args.palace)
+        if args.palace
+        else MempalaceConfig().palace_path
+    )
     status(palace_path=palace_path)
 
 
@@ -152,7 +172,11 @@ def cmd_compress(args):
     import chromadb
     from .dialect import Dialect
 
-    palace_path = os.path.expanduser(args.palace) if args.palace else MempalaceConfig().palace_path
+    palace_path = (
+        os.path.expanduser(args.palace)
+        if args.palace
+        else MempalaceConfig().palace_path
+    )
 
     # Load dialect (with optional entity config)
     config_path = args.config
@@ -275,7 +299,9 @@ def main():
     p_init = sub.add_parser("init", help="Detect rooms from your folder structure")
     p_init.add_argument("dir", help="Project directory to set up")
     p_init.add_argument(
-        "--yes", action="store_true", help="Auto-accept all detected entities (non-interactive)"
+        "--yes",
+        action="store_true",
+        help="Auto-accept all detected entities (non-interactive)",
     )
 
     # mine
@@ -287,13 +313,17 @@ def main():
         default="projects",
         help="Ingest mode: 'projects' for code/docs (default), 'convos' for chat exports",
     )
-    p_mine.add_argument("--wing", default=None, help="Wing name (default: directory name)")
+    p_mine.add_argument(
+        "--wing", default=None, help="Wing name (default: directory name)"
+    )
     p_mine.add_argument(
         "--agent",
         default="mempalace",
         help="Your name — recorded on every drawer (default: mempalace)",
     )
-    p_mine.add_argument("--limit", type=int, default=0, help="Max files to process (0 = all)")
+    p_mine.add_argument(
+        "--limit", type=int, default=0, help="Max files to process (0 = all)"
+    )
     p_mine.add_argument(
         "--dry-run", action="store_true", help="Show what would be filed without filing"
     )
@@ -315,7 +345,9 @@ def main():
     p_compress = sub.add_parser(
         "compress", help="Compress drawers using AAAK Dialect (~30x reduction)"
     )
-    p_compress.add_argument("--wing", default=None, help="Wing to compress (default: all wings)")
+    p_compress.add_argument(
+        "--wing", default=None, help="Wing to compress (default: all wings)"
+    )
     p_compress.add_argument(
         "--dry-run", action="store_true", help="Preview compression without storing"
     )
@@ -324,8 +356,12 @@ def main():
     )
 
     # wake-up
-    p_wakeup = sub.add_parser("wake-up", help="Show L0 + L1 wake-up context (~600-900 tokens)")
-    p_wakeup.add_argument("--wing", default=None, help="Wake-up for a specific project/wing")
+    p_wakeup = sub.add_parser(
+        "wake-up", help="Show L0 + L1 wake-up context (~600-900 tokens)"
+    )
+    p_wakeup.add_argument(
+        "--wing", default=None, help="Wake-up for a specific project/wing"
+    )
 
     # split
     p_split = sub.add_parser(
@@ -376,30 +412,37 @@ if __name__ == "__main__":
 
 # ====================== AGI CLI COMMANDS (2026) ======================
 
+
 def cmd_agi_prune(args):
     from .knowledge_graph import KnowledgeGraph
+
     kg = KnowledgeGraph()
     kg.prune_forgetting()
     print("AGI Prune complete")
 
+
 def cmd_agi_verify(args):
     from .knowledge_graph import KnowledgeGraph
+
     kg = KnowledgeGraph()
     kg.verify_triple_schema(
         getattr(args, "subject", "test"),
         getattr(args, "predicate", "test"),
-        getattr(args, "object", "test")
+        getattr(args, "object", "test"),
     )
+
 
 def cmd_agi_consolidate(args):
     from .knowledge_graph import KnowledgeGraph
+
     kg = KnowledgeGraph()
     kg.continuum_consolidate()
     print("AGI Continuum consolidation done")
 
+
 def cmd_agi_snapshot(args):
     from .knowledge_graph import KnowledgeGraph
+
     kg = KnowledgeGraph()
     kg.agi_snapshot(getattr(args, "name", "global"))
     print("AGI Snapshot created")
-

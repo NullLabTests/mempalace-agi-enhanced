@@ -173,7 +173,15 @@ def detect_rooms_from_files(project_dir: str) -> list:
     project_path = Path(project_dir).expanduser().resolve()
     keyword_counts = defaultdict(int)
 
-    SKIP_DIRS = {".git", "node_modules", "__pycache__", ".venv", "venv", "dist", "build"}
+    SKIP_DIRS = {
+        ".git",
+        "node_modules",
+        "__pycache__",
+        ".venv",
+        "venv",
+        "dist",
+        "build",
+    }
 
     for root, dirs, filenames in os.walk(project_path):
         dirs[:] = [d for d in dirs if d not in SKIP_DIRS]
@@ -198,12 +206,16 @@ def detect_rooms_from_files(project_dir: str) -> list:
             break
 
     if not rooms:
-        rooms = [{"name": "general", "description": "All project files", "keywords": []}]
+        rooms = [
+            {"name": "general", "description": "All project files", "keywords": []}
+        ]
 
     return rooms
 
 
-def print_proposed_structure(project_name: str, rooms: list, total_files: int, source: str):
+def print_proposed_structure(
+    project_name: str, rooms: list, total_files: int, source: str
+):
     print(f"\n{'=' * 55}")
     print("  MemPalace Init — Local setup")
     print(f"{'=' * 55}")
@@ -233,20 +245,32 @@ def get_user_approval(rooms: list) -> list:
         print("\n  Current rooms:")
         for i, room in enumerate(rooms):
             print(f"    {i + 1}. {room['name']} — {room['description']}")
-        remove = input("\n  Room numbers to REMOVE (comma-separated, or enter to skip): ").strip()
+        remove = input(
+            "\n  Room numbers to REMOVE (comma-separated, or enter to skip): "
+        ).strip()
         if remove:
-            to_remove = {int(x.strip()) - 1 for x in remove.split(",") if x.strip().isdigit()}
+            to_remove = {
+                int(x.strip()) - 1 for x in remove.split(",") if x.strip().isdigit()
+            }
             rooms = [r for i, r in enumerate(rooms) if i not in to_remove]
 
-    if choice == "add" or input("\n  Add any missing rooms? [y/N]: ").strip().lower() == "y":
+    if (
+        choice == "add"
+        or input("\n  Add any missing rooms? [y/N]: ").strip().lower() == "y"
+    ):
         while True:
             new_name = (
-                input("  New room name (or enter to stop): ").strip().lower().replace(" ", "_")
+                input("  New room name (or enter to stop): ")
+                .strip()
+                .lower()
+                .replace(" ", "_")
             )
             if not new_name:
                 break
             new_desc = input(f"  Description for '{new_name}': ").strip()
-            rooms.append({"name": new_name, "description": new_desc, "keywords": [new_name]})
+            rooms.append(
+                {"name": new_name, "description": new_desc, "keywords": [new_name]}
+            )
             print(f"  Added: {new_name}")
 
     return rooms
@@ -292,7 +316,9 @@ def detect_rooms_local(project_dir: str):
 
     # If still nothing, just use general
     if not rooms:
-        rooms = [{"name": "general", "description": "All project files", "keywords": []}]
+        rooms = [
+            {"name": "general", "description": "All project files", "keywords": []}
+        ]
         source = "fallback (flat project)"
 
     print_proposed_structure(project_name, rooms, len(files), source)

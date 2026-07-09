@@ -3,6 +3,7 @@ import time
 from .knowledge_graph import KnowledgeGraph
 from .agent_core import AgentCore
 
+
 def stats():
     conn = sqlite3.connect("mempalace.db")
     c = conn.cursor()
@@ -15,9 +16,10 @@ def stats():
     conn.close()
     return {
         "triple_count": total,
-        "low_confidence_ratio": low/total,
-        "stale_ratio": stale/total
+        "low_confidence_ratio": low / total,
+        "stale_ratio": stale / total,
     }
+
 
 def run():
     kg = KnowledgeGraph()
@@ -42,12 +44,14 @@ def run():
             print("ERR:", e)
             time.sleep(2)
 
+
 if __name__ == "__main__":
     run()
 
 # ===== META CRITIC INJECTION =====
 try:
     from mempalace.meta_critic import MetaCritic
+
     critic = MetaCritic()
 
     def critic_hook(event):
@@ -56,6 +60,7 @@ try:
 
 except Exception as e:
     print("[CRITIC ERROR]", e)
+
     def critic_hook(event):
         pass
 # =================================

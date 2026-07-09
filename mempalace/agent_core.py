@@ -1,5 +1,6 @@
 import random
 
+
 class AgentCore:
     def decide(self, stats: dict):
         if stats.get("low_confidence_ratio", 0) > 0.3:

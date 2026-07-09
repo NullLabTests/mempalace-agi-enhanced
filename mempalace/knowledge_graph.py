@@ -94,7 +94,9 @@ class KnowledgeGraph:
 
     # ── Write operations ──────────────────────────────────────────────────
 
-    def add_entity(self, name: str, entity_type: str = "unknown", properties: dict = None):
+    def add_entity(
+        self, name: str, entity_type: str = "unknown", properties: dict = None
+    ):
         """Add or update an entity node."""
         eid = self._entity_id(name)
         props = json.dumps(properties or {})
@@ -132,8 +134,12 @@ class KnowledgeGraph:
 
         # Auto-create entities if they don't exist
         conn = self._conn()
-        conn.execute("INSERT OR IGNORE INTO entities (id, name) VALUES (?, ?)", (sub_id, subject))
-        conn.execute("INSERT OR IGNORE INTO entities (id, name) VALUES (?, ?)", (obj_id, obj))
+        conn.execute(
+            "INSERT OR IGNORE INTO entities (id, name) VALUES (?, ?)", (sub_id, subject)
+        )
+        conn.execute(
+            "INSERT OR IGNORE INTO entities (id, name) VALUES (?, ?)", (obj_id, obj)
+        )
 
         # Check for existing identical triple
         existing = conn.execute(
@@ -316,7 +322,9 @@ class KnowledgeGraph:
         conn = self._conn()
         entities = conn.execute("SELECT COUNT(*) FROM entities").fetchone()[0]
         triples = conn.execute("SELECT COUNT(*) FROM triples").fetchone()[0]
-        current = conn.execute("SELECT COUNT(*) FROM triples WHERE valid_to IS NULL").fetchone()[0]
+        current = conn.execute(
+            "SELECT COUNT(*) FROM triples WHERE valid_to IS NULL"
+        ).fetchone()[0]
         expired = triples - current
         predicates = [
             r[0]
@@ -356,7 +364,10 @@ class KnowledgeGraph:
             parent = facts.get("parent")
             if parent:
                 self.add_triple(
-                    name, "child_of", parent.capitalize(), valid_from=facts.get("birthday")
+                    name,
+                    "child_of",
+                    parent.capitalize(),
+                    valid_from=facts.get("birthday"),
                 )
 
             partner = facts.get("partner")
@@ -372,16 +383,25 @@ class KnowledgeGraph:
                     valid_from=facts.get("birthday"),
                 )
             elif relationship == "husband":
-                self.add_triple(name, "is_partner_of", facts.get("partner", name).capitalize())
+                self.add_triple(
+                    name, "is_partner_of", facts.get("partner", name).capitalize()
+                )
             elif relationship == "brother":
-                self.add_triple(name, "is_sibling_of", facts.get("sibling", name).capitalize())
+                self.add_triple(
+                    name, "is_sibling_of", facts.get("sibling", name).capitalize()
+                )
             elif relationship == "dog":
-                self.add_triple(name, "is_pet_of", facts.get("owner", name).capitalize())
+                self.add_triple(
+                    name, "is_pet_of", facts.get("owner", name).capitalize()
+                )
                 self.add_entity(name, "animal")
 
             # Interests
             for interest in facts.get("interests", []):
-                self.add_triple(name, "loves", interest.capitalize(), valid_from="2025-01-01")
+                self.add_triple(
+                    name, "loves", interest.capitalize(), valid_from="2025-01-01"
+                )
+
 
 # ====================== AGI/ASI ENHANCEMENTS (2026 arXiv) ======================
 # Injected by Grok + NullLabTests — species-saving edition
@@ -394,31 +414,36 @@ def agi_snapshot(self, name: str = "global"):
     snapshot_id = f"snap_{eid}_{datetime.now().isoformat()}"
     conn.execute(
         "INSERT INTO entities (id, name, type, properties) VALUES (?, ?, ?, ?)",
-        (snapshot_id, f"{name}_snapshot_{datetime.now().date()}", "snapshot", "{}")
+        (snapshot_id, f"{name}_snapshot_{datetime.now().date()}", "snapshot", "{}"),
     )
     conn.commit()
     conn.close()
     print(f"Ground-truth snapshot created: {snapshot_id}")
+
 
 def prune_forgetting(self, threshold: float = 0.3):
     """SuperLocalMemory V3.3: Bio-inspired forgetting + quantization (arXiv:2604.04514)"""
     conn = self._conn()
     conn.execute(
         "DELETE FROM triples WHERE confidence < ? AND (julianday('now') - julianday(extracted_at)) > 30",
-        (threshold,)
+        (threshold,),
     )
     conn.commit()
     conn.close()
     print("Bio-forgetting + quantization applied — palace stays lean forever")
+
 
 def add_case_with_safety(self, subject: str, predicate: str, obj: str):
     """Springdrift: Case-based memory + normative safety (arXiv:2604.04686)"""
     if any(word in predicate.lower() for word in ["harm", "delete", "kill", "destroy"]):
         print("NORMATIVE SAFETY BLOCKED: potentially harmful triple")
         return None
-    case_id = f"case_{hashlib.md5(f'{subject}{predicate}{obj}'.encode()).hexdigest()[:8]}"
+    case_id = (
+        f"case_{hashlib.md5(f'{subject}{predicate}{obj}'.encode()).hexdigest()[:8]}"
+    )
     self.add_triple(subject, f"case_{case_id}", obj)
     print(f"Safe case-based memory stored: {case_id}")
+
 
 def verify_triple_schema(self, subject: str, predicate: str, obj: str):
     """Schema-Aware Verification (arXiv:2604.04190)"""
@@ -427,6 +452,7 @@ def verify_triple_schema(self, subject: str, predicate: str, obj: str):
         return False
     print(f"Triple schema verified: {subject} {predicate} {obj}")
     return True
+
 
 def continuum_consolidate(self):
     """Continuum Memory Architecture (arXiv:2601.09913)"""
@@ -437,4 +463,3 @@ def continuum_consolidate(self):
     conn.commit()
     conn.close()
     print("Continuum consolidation complete — temporal chains updated")
-

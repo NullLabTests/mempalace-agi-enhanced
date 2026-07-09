@@ -48,7 +48,9 @@ def _get_embedder(model_name: str):
         try:
             from fastembed import TextEmbedding
 
-            print(f"  Loading embedding model: {model_name} (first run may download ~1.3GB)")
+            print(
+                f"  Loading embedding model: {model_name} (first run may download ~1.3GB)"
+            )
             _fastembed_model = TextEmbedding(model_name=model_name)
             print("  Embedding model loaded.")
         except ImportError:
@@ -65,7 +67,14 @@ def _embed(texts: list, embed_model: str) -> list:
     return [vec.tolist() for vec in embedder.embed(texts)]
 
 
-def _query(collection, question: str, n_results: int, embed_model: str, include=None, where=None):
+def _query(
+    collection,
+    question: str,
+    n_results: int,
+    embed_model: str,
+    include=None,
+    where=None,
+):
     """Query collection with either query_texts or query_embeddings."""
     if include is None:
         include = ["distances", "metadatas", "documents"]
@@ -471,7 +480,9 @@ def _route_question(question, api_key, model="claude-haiku-4-5-20251001"):
     return found or PALACE_ROOMS  # if routing fails, search everywhere
 
 
-def palace_assign_rooms(sessions, sample_id, api_key, cache, model="claude-haiku-4-5-20251001"):
+def palace_assign_rooms(
+    sessions, sample_id, api_key, cache, model="claude-haiku-4-5-20251001"
+):
     """
     Assign each session to a palace room. Uses cache to avoid re-calling LLM.
 
@@ -510,7 +521,12 @@ def palace_assign_rooms(sessions, sample_id, api_key, cache, model="claude-haiku
 
 
 def llm_rerank_locomo(
-    question, retrieved_ids, retrieved_docs, api_key, top_k=10, model="claude-sonnet-4-6"
+    question,
+    retrieved_ids,
+    retrieved_docs,
+    api_key,
+    top_k=10,
+    model="claude-sonnet-4-6",
 ):
     """
     Ask LLM to pick the single most relevant document for this question.
@@ -565,7 +581,9 @@ def llm_rerank_locomo(
                 pick = int(m.group(1))
                 if 1 <= pick <= len(candidates):
                     chosen_id = candidates[pick - 1]
-                    reordered = [chosen_id] + [cid for cid in retrieved_ids if cid != chosen_id]
+                    reordered = [chosen_id] + [
+                        cid for cid in retrieved_ids if cid != chosen_id
+                    ]
                     return reordered
             break
         except (_socket.timeout, TimeoutError):
@@ -594,7 +612,11 @@ def _load_api_key(key_arg):
                 val = keys.get(name, "")
                 if isinstance(val, str) and val.startswith("sk-ant-"):
                     return val
-            for section in ("anthropic", "anthropic_milla", "anthropic_claude_code_main"):
+            for section in (
+                "anthropic",
+                "anthropic_milla",
+                "anthropic_claude_code_main",
+            ):
                 sec = keys.get(section, {})
                 if isinstance(sec, dict):
                     for subkey in ("lu_key", "key", "api_key"):
@@ -637,7 +659,9 @@ def run_benchmark(
     if llm_rerank_enabled or mode == "palace":
         api_key = _load_api_key(llm_key)
         if not api_key:
-            print(f"ERROR: --mode {mode} requires an API key (--llm-key or ANTHROPIC_API_KEY).")
+            print(
+                f"ERROR: --mode {mode} requires an API key (--llm-key or ANTHROPIC_API_KEY)."
+            )
             sys.exit(1)
 
     # Palace mode: load or create room assignment cache
@@ -652,7 +676,9 @@ def run_benchmark(
                 palace_cache = json.load(f)
             print(f"  Palace cache: {len(palace_cache)} room assignments loaded")
 
-    rerank_label = f" + LLM re-rank ({llm_model.split('-')[1]})" if llm_rerank_enabled else ""
+    rerank_label = (
+        f" + LLM re-rank ({llm_model.split('-')[1]})" if llm_rerank_enabled else ""
+    )
 
     print(f"\n{'=' * 60}")
     print("  MemPal × LoCoMo Benchmark")
@@ -699,7 +725,9 @@ def run_benchmark(
                 f"  [{conv_idx + 1}/{len(data)}] {sample_id}: "
                 f"{len(sessions)} sessions → {len(rooms_summary)} rooms, {len(qa_pairs)} questions"
             )
-            print(f"    Rooms: {dict(sorted(rooms_summary.items(), key=lambda x: -x[1]))}")
+            print(
+                f"    Rooms: {dict(sorted(rooms_summary.items(), key=lambda x: -x[1]))}"
+            )
         else:
             print(
                 f"  [{conv_idx + 1}/{len(data)}] {sample_id}: "
@@ -745,11 +773,19 @@ def run_benchmark(
                 evidence = qa.get("evidence", [])
 
                 # Extract names + predicate keywords once (used by hybrid, rooms, palace)
-                names = _person_names(question) if mode in ("hybrid", "rooms", "palace") else []
+                names = (
+                    _person_names(question)
+                    if mode in ("hybrid", "rooms", "palace")
+                    else []
+                )
                 name_words = {n.lower() for n in names}
                 all_kws = _kw(question) if mode in ("hybrid", "rooms", "palace") else []
                 predicate_kws = [w for w in all_kws if w not in name_words]
-                quoted = _quoted_phrases(question) if mode in ("hybrid", "rooms", "palace") else []
+                quoted = (
+                    _quoted_phrases(question)
+                    if mode in ("hybrid", "rooms", "palace")
+                    else []
+                )
 
                 if mode == "palace":
                     # ── True palace navigation ────────────────────────────────
@@ -772,7 +808,11 @@ def run_benchmark(
                     room_kw_scores = []
                     for room, summaries in room_summaries.items():
                         agg_text = " ".join(summaries)
-                        overlap = _kw_overlap(predicate_kws, agg_text) if predicate_kws else 0.0
+                        overlap = (
+                            _kw_overlap(predicate_kws, agg_text)
+                            if predicate_kws
+                            else 0.0
+                        )
                         room_kw_scores.append((overlap, room))
                     room_kw_scores.sort(reverse=True)
 
@@ -801,7 +841,11 @@ def run_benchmark(
                     n_retrieve = max(top_k, min(sessions_in_rooms, len(corpus)))
 
                     results_p = _query(
-                        collection, question, n_retrieve, embed_model, where=where_filter
+                        collection,
+                        question,
+                        n_retrieve,
+                        embed_model,
+                        where=where_filter,
                     )
                     raw_ids = [m["corpus_id"] for m in results_p["metadatas"][0]]
                     raw_distances = results_p["distances"][0]
@@ -844,10 +888,16 @@ def run_benchmark(
                     # Stage 2: embedding query filtered to those rooms, then hybrid rerank
                     n_in_rooms = min(top_k * 2, len(top_room_ids))
                     where_filter = (
-                        {"corpus_id": {"$in": top_room_ids}} if len(top_room_ids) > 1 else None
+                        {"corpus_id": {"$in": top_room_ids}}
+                        if len(top_room_ids) > 1
+                        else None
                     )
                     results_r = _query(
-                        collection, question, n_in_rooms, embed_model, where=where_filter
+                        collection,
+                        question,
+                        n_in_rooms,
+                        embed_model,
+                        where=where_filter,
                     )
                     raw_ids = [m["corpus_id"] for m in results_r["metadatas"][0]]
                     raw_distances = results_r["distances"][0]
@@ -870,7 +920,9 @@ def run_benchmark(
 
                 else:
                     # ── Standard query + optional hybrid rerank ──────────────────
-                    n_retrieve = min(top_k * 3 if mode == "hybrid" else top_k, len(corpus))
+                    n_retrieve = min(
+                        top_k * 3 if mode == "hybrid" else top_k, len(corpus)
+                    )
                     results = _query(collection, question, n_retrieve, embed_model)
                     raw_ids = [m["corpus_id"] for m in results["metadatas"][0]]
                     raw_distances = results["distances"][0]
@@ -878,7 +930,9 @@ def run_benchmark(
 
                     if mode == "hybrid":
                         scored = []
-                        for i, (cid, dist, doc) in enumerate(zip(raw_ids, raw_distances, raw_docs)):
+                        for i, (cid, dist, doc) in enumerate(
+                            zip(raw_ids, raw_distances, raw_docs)
+                        ):
                             pred_overlap = _kw_overlap(predicate_kws, doc)
                             fused = dist * (1.0 - 0.50 * pred_overlap)
                             q_boost = _quoted_boost(quoted, doc)
@@ -940,7 +994,9 @@ def run_benchmark(
     print(f"\n{'=' * 60}")
     print(f"  RESULTS — MemPal ({mode}{rerank_label}, {granularity}, top-{top_k})")
     print(f"{'=' * 60}")
-    print(f"  Time:        {elapsed:.1f}s ({elapsed / max(total_qa, 1):.2f}s per question)")
+    print(
+        f"  Time:        {elapsed:.1f}s ({elapsed / max(total_qa, 1):.2f}s per question)"
+    )
     print(f"  Questions:   {total_qa}")
     print(f"  Avg Recall:  {avg_recall:.3f}")
 
@@ -1000,7 +1056,9 @@ def evidence_to_session_ids(evidence):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="MemPal × LoCoMo Benchmark")
     parser.add_argument("data_file", help="Path to locomo10.json")
-    parser.add_argument("--top-k", type=int, default=50, help="Top-k retrieval (default: 50)")
+    parser.add_argument(
+        "--top-k", type=int, default=50, help="Top-k retrieval (default: 50)"
+    )
     parser.add_argument(
         "--mode",
         choices=["raw", "aaak", "hybrid", "rooms", "palace"],
@@ -1023,13 +1081,17 @@ if __name__ == "__main__":
     )
     parser.add_argument("--limit", type=int, default=0, help="Limit to N conversations")
     parser.add_argument("--out", default=None, help="Output JSON file path")
-    parser.add_argument("--llm-rerank", action="store_true", help="Use LLM to rerank top results")
+    parser.add_argument(
+        "--llm-rerank", action="store_true", help="Use LLM to rerank top results"
+    )
     parser.add_argument(
         "--llm-model",
         default="claude-sonnet-4-6",
         help="Model for LLM rerank (default: claude-sonnet-4-6)",
     )
-    parser.add_argument("--llm-key", default="", help="API key (or set ANTHROPIC_API_KEY env var)")
+    parser.add_argument(
+        "--llm-key", default="", help="API key (or set ANTHROPIC_API_KEY env var)"
+    )
     parser.add_argument(
         "--hybrid-weight",
         type=float,

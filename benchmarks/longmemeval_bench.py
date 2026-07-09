@@ -60,7 +60,9 @@ def dcg(relevances, k):
 
 def ndcg(rankings, correct_ids, corpus_ids, k):
     """Normalized DCG."""
-    relevances = [1.0 if corpus_ids[idx] in correct_ids else 0.0 for idx in rankings[:k]]
+    relevances = [
+        1.0 if corpus_ids[idx] in correct_ids else 0.0 for idx in rankings[:k]
+    ]
     ideal = sorted(relevances, reverse=True)
     idcg = dcg(ideal, k)
     if idcg == 0:
@@ -129,7 +131,9 @@ def _make_embed_fn(model_name: str):
 
         class _FastEmbedFn(EmbeddingFunction):
             def __init__(self, name):
-                print(f"  Loading embedding model: {name} (first run downloads ~300-1300MB)...")
+                print(
+                    f"  Loading embedding model: {name} (first run downloads ~300-1300MB)..."
+                )
                 self._model = TextEmbedding(name)
                 print("  Model ready.")
 
@@ -184,7 +188,9 @@ def build_palace_and_retrieve(entry, granularity="session", n_results=50):
     session_ids = entry["haystack_session_ids"]
     dates = entry["haystack_dates"]
 
-    for sess_idx, (session, sess_id, date) in enumerate(zip(sessions, session_ids, dates)):
+    for sess_idx, (session, sess_id, date) in enumerate(
+        zip(sessions, session_ids, dates)
+    ):
         if granularity == "session":
             # One document per session: join all user content
             user_turns = [t["content"] for t in session if t["role"] == "user"]
@@ -213,7 +219,8 @@ def build_palace_and_retrieve(entry, granularity="session", n_results=50):
         documents=corpus,
         ids=[f"doc_{i}" for i in range(len(corpus))],
         metadatas=[
-            {"corpus_id": cid, "timestamp": ts} for cid, ts in zip(corpus_ids, corpus_timestamps)
+            {"corpus_id": cid, "timestamp": ts}
+            for cid, ts in zip(corpus_ids, corpus_timestamps)
         ],
     )
 
@@ -260,7 +267,9 @@ def build_palace_and_retrieve_aaak(entry, granularity="session", n_results=50):
     session_ids = entry["haystack_session_ids"]
     dates = entry["haystack_dates"]
 
-    for sess_idx, (session, sess_id, date) in enumerate(zip(sessions, session_ids, dates)):
+    for sess_idx, (session, sess_id, date) in enumerate(
+        zip(sessions, session_ids, dates)
+    ):
         if granularity == "session":
             user_turns = [t["content"] for t in session if t["role"] == "user"]
             if user_turns:
@@ -291,7 +300,8 @@ def build_palace_and_retrieve_aaak(entry, granularity="session", n_results=50):
         documents=corpus_compressed,
         ids=[f"doc_{i}" for i in range(len(corpus_compressed))],
         metadatas=[
-            {"corpus_id": cid, "timestamp": ts} for cid, ts in zip(corpus_ids, corpus_timestamps)
+            {"corpus_id": cid, "timestamp": ts}
+            for cid, ts in zip(corpus_ids, corpus_timestamps)
         ],
     )
 
@@ -411,7 +421,9 @@ def build_palace_and_retrieve_rooms(entry, granularity="session", n_results=50):
     session_ids = entry["haystack_session_ids"]
     dates = entry["haystack_dates"]
 
-    for sess_idx, (session, sess_id, date) in enumerate(zip(sessions, session_ids, dates)):
+    for sess_idx, (session, sess_id, date) in enumerate(
+        zip(sessions, session_ids, dates)
+    ):
         if granularity == "session":
             user_turns = [t["content"] for t in session if t["role"] == "user"]
             if user_turns:
@@ -569,7 +581,9 @@ def build_palace_and_retrieve_hybrid(
     session_ids = entry["haystack_session_ids"]
     dates = entry["haystack_dates"]
 
-    for sess_idx, (session, sess_id, date) in enumerate(zip(sessions, session_ids, dates)):
+    for sess_idx, (session, sess_id, date) in enumerate(
+        zip(sessions, session_ids, dates)
+    ):
         if granularity == "session":
             user_turns = [t["content"] for t in session if t["role"] == "user"]
             if user_turns:
@@ -595,7 +609,8 @@ def build_palace_and_retrieve_hybrid(
         documents=corpus,
         ids=[f"doc_{i}" for i in range(len(corpus))],
         metadatas=[
-            {"corpus_id": cid, "timestamp": ts} for cid, ts in zip(corpus_ids, corpus_timestamps)
+            {"corpus_id": cid, "timestamp": ts}
+            for cid, ts in zip(corpus_ids, corpus_timestamps)
         ],
     )
 
@@ -651,7 +666,9 @@ def build_palace_and_retrieve_full(entry, granularity="session", n_results=50):
     session_ids = entry["haystack_session_ids"]
     dates = entry["haystack_dates"]
 
-    for sess_idx, (session, sess_id, date) in enumerate(zip(sessions, session_ids, dates)):
+    for sess_idx, (session, sess_id, date) in enumerate(
+        zip(sessions, session_ids, dates)
+    ):
         if granularity == "session":
             # All turns: user questions + assistant confirmations/answers
             all_turns = [t["content"] for t in session]
@@ -678,7 +695,8 @@ def build_palace_and_retrieve_full(entry, granularity="session", n_results=50):
         documents=corpus,
         ids=[f"doc_{i}" for i in range(len(corpus))],
         metadatas=[
-            {"corpus_id": cid, "timestamp": ts} for cid, ts in zip(corpus_ids, corpus_timestamps)
+            {"corpus_id": cid, "timestamp": ts}
+            for cid, ts in zip(corpus_ids, corpus_timestamps)
         ],
     )
 
@@ -907,7 +925,9 @@ def build_palace_and_retrieve_hybrid_v2(
         collection2.add(
             documents=top_corpus_full,
             ids=[f"doc2_{i}" for i in range(len(top_corpus_full))],
-            metadatas=[{"corpus_id": cid, "timestamp": ts} for cid, ts in zip(top_ids, top_ts)],
+            metadatas=[
+                {"corpus_id": cid, "timestamp": ts} for cid, ts in zip(top_ids, top_ts)
+            ],
         )
         results2 = collection2.query(
             query_texts=[question],
@@ -915,9 +935,13 @@ def build_palace_and_retrieve_hybrid_v2(
             include=["distances", "metadatas"],
         )
         # Build final rankings: two-pass top sessions first, then rest
-        two_pass_order = [top_indices[int(rid.split("_")[1])] for rid in results2["ids"][0]]
+        two_pass_order = [
+            top_indices[int(rid.split("_")[1])] for rid in results2["ids"][0]
+        ]
         seen = set(two_pass_order)
-        ranked_indices = two_pass_order + [i for i in range(len(corpus_user)) if i not in seen]
+        ranked_indices = two_pass_order + [
+            i for i in range(len(corpus_user)) if i not in seen
+        ]
         return ranked_indices, corpus_user, corpus_ids, corpus_timestamps
 
     # -------------------------------------------------------------------------
@@ -928,7 +952,8 @@ def build_palace_and_retrieve_hybrid_v2(
         documents=corpus_user,
         ids=[f"doc_{i}" for i in range(len(corpus_user))],
         metadatas=[
-            {"corpus_id": cid, "timestamp": ts} for cid, ts in zip(corpus_ids, corpus_timestamps)
+            {"corpus_id": cid, "timestamp": ts}
+            for cid, ts in zip(corpus_ids, corpus_timestamps)
         ],
     )
 
@@ -968,7 +993,9 @@ def build_palace_and_retrieve_hybrid_v2(
                     temporal_boost = 0.40
                 elif delta_days <= tolerance * 3:
                     # Partial hit: scaled
-                    temporal_boost = 0.40 * (1.0 - (delta_days - tolerance) / (tolerance * 2))
+                    temporal_boost = 0.40 * (
+                        1.0 - (delta_days - tolerance) / (tolerance * 2)
+                    )
                 else:
                     temporal_boost = 0.0
                 fused_dist = fused_dist * (1.0 - temporal_boost)
@@ -1243,16 +1270,22 @@ def build_palace_and_retrieve_hybrid_v3(
         collection2.add(
             documents=top_corpus_full,
             ids=[f"doc2_{i}" for i in range(len(top_corpus_full))],
-            metadatas=[{"corpus_id": cid, "timestamp": ts} for cid, ts in zip(top_ids, top_ts)],
+            metadatas=[
+                {"corpus_id": cid, "timestamp": ts} for cid, ts in zip(top_ids, top_ts)
+            ],
         )
         results2 = collection2.query(
             query_texts=[question],
             n_results=min(n_results, len(top_corpus_full)),
             include=["distances", "metadatas"],
         )
-        two_pass_order = [top_indices[int(rid.split("_")[1])] for rid in results2["ids"][0]]
+        two_pass_order = [
+            top_indices[int(rid.split("_")[1])] for rid in results2["ids"][0]
+        ]
         seen = set(two_pass_order)
-        ranked_indices = two_pass_order + [i for i in range(len(corpus_user)) if i not in seen]
+        ranked_indices = two_pass_order + [
+            i for i in range(len(corpus_user)) if i not in seen
+        ]
         return ranked_indices, corpus_user, corpus_ids, corpus_timestamps
 
     # -------------------------------------------------------------------------
@@ -1828,7 +1861,9 @@ def classify_session_hall(session):
       hall_general      — default
     """
     user_text = " ".join(t["content"] for t in session if t["role"] == "user").lower()
-    asst_text = " ".join(t["content"] for t in session if t["role"] == "assistant").lower()
+    asst_text = " ".join(
+        t["content"] for t in session if t["role"] == "assistant"
+    ).lower()
 
     pref_signals = [
         "i prefer",
@@ -2170,7 +2205,14 @@ def build_palace_and_retrieve_palace(
 
     # Per-hall closet documents (user turns only — clean, no noise)
     hall_docs = {
-        h: [] for h in [HALL_PREFERENCES, HALL_FACTS, HALL_EVENTS, HALL_ASSISTANT, HALL_GENERAL]
+        h: []
+        for h in [
+            HALL_PREFERENCES,
+            HALL_FACTS,
+            HALL_EVENTS,
+            HALL_ASSISTANT,
+            HALL_GENERAL,
+        ]
     }
     hall_meta = {h: [] for h in hall_docs}
 
@@ -2308,7 +2350,9 @@ def build_palace_and_retrieve_palace(
         {
             "corpus_id": corpus_ids[i],
             "timestamp": corpus_timestamps[i],
-            "hall": classify_session_hall(sessions[i]) if i < len(sessions) else HALL_GENERAL,
+            "hall": classify_session_hall(sessions[i])
+            if i < len(sessions)
+            else HALL_GENERAL,
         }
         for i in range(len(corpus_user))
     ]
@@ -2633,7 +2677,9 @@ def build_palace_and_retrieve_diary(
         # DIARY LAYER: get or compute LLM topic extraction
         if sess_id not in diary_cache:
             if api_key:
-                result = diary_ingest_session(session, sess_id, api_key, model=diary_model)
+                result = diary_ingest_session(
+                    session, sess_id, api_key, model=diary_model
+                )
                 diary_cache[sess_id] = result  # cache even if None
             else:
                 diary_cache[sess_id] = None
@@ -2706,7 +2752,9 @@ def build_palace_and_retrieve_diary(
             {
                 "corpus_id": corpus_ids[i],
                 "timestamp": corpus_timestamps[i],
-                "hall": classify_session_hall(sessions[i]) if i < len(sessions) else HALL_GENERAL,
+                "hall": classify_session_hall(sessions[i])
+                if i < len(sessions)
+                else HALL_GENERAL,
                 "layer": "raw",
             }
             for i in range(len(corpus_user))
@@ -2763,7 +2811,13 @@ def build_palace_and_retrieve_diary(
 
 
 def llm_rerank(
-    question, rankings, corpus, corpus_ids, api_key, top_k=10, model="claude-haiku-4-5-20251001"
+    question,
+    rankings,
+    corpus,
+    corpus_ids,
+    api_key,
+    top_k=10,
+    model="claude-haiku-4-5-20251001",
 ):
     """
     Use an LLM to re-rank the top-k retrieved sessions.
@@ -2878,7 +2932,11 @@ def _load_api_key(key_arg):
                 if isinstance(val, str) and val.startswith("sk-ant-"):
                     return val
             # Nested dict: keys["anthropic"]["lu_key"]
-            for section in ("anthropic", "anthropic_milla", "anthropic_claude_code_main"):
+            for section in (
+                "anthropic",
+                "anthropic_milla",
+                "anthropic_claude_code_main",
+            ):
                 sec = keys.get(section, {})
                 if isinstance(sec, dict):
                     for subkey in ("lu_key", "key", "api_key"):
@@ -2895,7 +2953,9 @@ def _load_api_key(key_arg):
 # =============================================================================
 
 
-def _load_or_create_split(split_file: str, data: list, dev_size: int = 50, seed: int = 42) -> dict:
+def _load_or_create_split(
+    split_file: str, data: list, dev_size: int = 50, seed: int = 42
+) -> dict:
     """
     Load an existing train/test split or create a new one.
 
@@ -2917,10 +2977,17 @@ def _load_or_create_split(split_file: str, data: list, dev_size: int = 50, seed:
     rng.shuffle(all_ids)
     dev_ids = all_ids[:dev_size]
     held_out_ids = all_ids[dev_size:]
-    split = {"dev": dev_ids, "held_out": held_out_ids, "seed": seed, "dev_size": dev_size}
+    split = {
+        "dev": dev_ids,
+        "held_out": held_out_ids,
+        "seed": seed,
+        "dev_size": dev_size,
+    }
     with open(split_path, "w") as f:
         json.dump(split, f, indent=2)
-    print(f"  Created new split: {len(dev_ids)} dev / {len(held_out_ids)} held-out → {split_path}")
+    print(
+        f"  Created new split: {len(dev_ids)} dev / {len(held_out_ids)} held-out → {split_path}"
+    )
     return split
 
 
@@ -2995,7 +3062,9 @@ def run_benchmark(
         # Collect all unique sessions not yet in cache
         unique_sessions = {}  # sess_id → session turns
         for entry in data:
-            for session, sess_id in zip(entry["haystack_sessions"], entry["haystack_session_ids"]):
+            for session, sess_id in zip(
+                entry["haystack_sessions"], entry["haystack_session_ids"]
+            ):
                 if sess_id not in diary_cache and sess_id not in unique_sessions:
                     unique_sessions[sess_id] = session
 
@@ -3007,7 +3076,9 @@ def run_benchmark(
             cache_path = Path(diary_cache_file) if diary_cache_file else None
             for sess_id, session in unique_sessions.items():
                 try:
-                    result = diary_ingest_session(session, sess_id, api_key, model=llm_model)
+                    result = diary_ingest_session(
+                        session, sess_id, api_key, model=llm_model
+                    )
                 except Exception:
                     result = None
                 diary_cache[sess_id] = result
@@ -3066,47 +3137,59 @@ def run_benchmark(
 
         # Run retrieval with selected mode
         if mode == "aaak":
-            rankings, corpus, corpus_ids, corpus_timestamps = build_palace_and_retrieve_aaak(
-                entry, granularity=granularity
+            rankings, corpus, corpus_ids, corpus_timestamps = (
+                build_palace_and_retrieve_aaak(entry, granularity=granularity)
             )
         elif mode == "rooms":
-            rankings, corpus, corpus_ids, corpus_timestamps = build_palace_and_retrieve_rooms(
-                entry, granularity=granularity
+            rankings, corpus, corpus_ids, corpus_timestamps = (
+                build_palace_and_retrieve_rooms(entry, granularity=granularity)
             )
         elif mode == "hybrid":
-            rankings, corpus, corpus_ids, corpus_timestamps = build_palace_and_retrieve_hybrid(
-                entry, granularity=granularity, hybrid_weight=hybrid_weight
+            rankings, corpus, corpus_ids, corpus_timestamps = (
+                build_palace_and_retrieve_hybrid(
+                    entry, granularity=granularity, hybrid_weight=hybrid_weight
+                )
             )
         elif mode == "hybrid_v2":
-            rankings, corpus, corpus_ids, corpus_timestamps = build_palace_and_retrieve_hybrid_v2(
-                entry, granularity=granularity, hybrid_weight=hybrid_weight
+            rankings, corpus, corpus_ids, corpus_timestamps = (
+                build_palace_and_retrieve_hybrid_v2(
+                    entry, granularity=granularity, hybrid_weight=hybrid_weight
+                )
             )
         elif mode == "hybrid_v3":
-            rankings, corpus, corpus_ids, corpus_timestamps = build_palace_and_retrieve_hybrid_v3(
-                entry, granularity=granularity, hybrid_weight=hybrid_weight
+            rankings, corpus, corpus_ids, corpus_timestamps = (
+                build_palace_and_retrieve_hybrid_v3(
+                    entry, granularity=granularity, hybrid_weight=hybrid_weight
+                )
             )
         elif mode == "hybrid_v4":
-            rankings, corpus, corpus_ids, corpus_timestamps = build_palace_and_retrieve_hybrid_v4(
-                entry, granularity=granularity, hybrid_weight=hybrid_weight
+            rankings, corpus, corpus_ids, corpus_timestamps = (
+                build_palace_and_retrieve_hybrid_v4(
+                    entry, granularity=granularity, hybrid_weight=hybrid_weight
+                )
             )
         elif mode == "palace":
-            rankings, corpus, corpus_ids, corpus_timestamps = build_palace_and_retrieve_palace(
-                entry, granularity=granularity, hybrid_weight=hybrid_weight
+            rankings, corpus, corpus_ids, corpus_timestamps = (
+                build_palace_and_retrieve_palace(
+                    entry, granularity=granularity, hybrid_weight=hybrid_weight
+                )
             )
         elif mode == "diary":
             # If skip_precompute, pass empty api_key to prevent inline Haiku calls
             _diary_api_key = "" if skip_precompute else api_key
-            rankings, corpus, corpus_ids, corpus_timestamps = build_palace_and_retrieve_diary(
-                entry,
-                granularity=granularity,
-                hybrid_weight=hybrid_weight,
-                diary_cache=diary_cache,
-                api_key=_diary_api_key,
-                diary_model=llm_model,
+            rankings, corpus, corpus_ids, corpus_timestamps = (
+                build_palace_and_retrieve_diary(
+                    entry,
+                    granularity=granularity,
+                    hybrid_weight=hybrid_weight,
+                    diary_cache=diary_cache,
+                    api_key=_diary_api_key,
+                    diary_model=llm_model,
+                )
             )
         elif mode == "full":
-            rankings, corpus, corpus_ids, corpus_timestamps = build_palace_and_retrieve_full(
-                entry, granularity=granularity
+            rankings, corpus, corpus_ids, corpus_timestamps = (
+                build_palace_and_retrieve_full(entry, granularity=granularity)
             )
         else:
             rankings, corpus, corpus_ids, corpus_timestamps = build_palace_and_retrieve(
@@ -3121,7 +3204,13 @@ def run_benchmark(
         if llm_rerank_enabled:
             rerank_pool = 20 if mode in ("hybrid_v3", "hybrid_v4", "palace") else 10
             rankings = llm_rerank(
-                question, rankings, corpus, corpus_ids, api_key, top_k=rerank_pool, model=llm_model
+                question,
+                rankings,
+                corpus,
+                corpus_ids,
+                api_key,
+                top_k=rerank_pool,
+                model=llm_model,
             )
 
         # Evaluate at session level
@@ -3140,7 +3229,9 @@ def run_benchmark(
 
         for k in ks:
             # Session-level metrics
-            ra, rl, nd = evaluate_retrieval(rankings, session_correct, session_level_ids, k)
+            ra, rl, nd = evaluate_retrieval(
+                rankings, session_correct, session_level_ids, k
+            )
             metrics_session[f"recall_any@{k}"].append(ra)
             metrics_session[f"recall_all@{k}"].append(rl)
             metrics_session[f"ndcg_any@{k}"].append(nd)
@@ -3188,7 +3279,9 @@ def run_benchmark(
         r5 = metrics_session["recall_any@5"][-1]
         r10 = metrics_session["recall_any@10"][-1]
         status = "HIT" if r5 > 0 else "miss"
-        print(f"  [{i + 1:4}/{len(data)}] {qid[:30]:30} R@5={r5:.0f} R@10={r10:.0f}  {status}")
+        print(
+            f"  [{i + 1:4}/{len(data)}] {qid[:30]:30} R@5={r5:.0f} R@10={r10:.0f}  {status}"
+        )
 
     elapsed = (datetime.now() - start_time).total_seconds()
 
@@ -3200,8 +3293,12 @@ def run_benchmark(
 
     print("  SESSION-LEVEL METRICS:")
     for k in ks:
-        ra = sum(metrics_session[f"recall_any@{k}"]) / len(metrics_session[f"recall_any@{k}"])
-        nd = sum(metrics_session[f"ndcg_any@{k}"]) / len(metrics_session[f"ndcg_any@{k}"])
+        ra = sum(metrics_session[f"recall_any@{k}"]) / len(
+            metrics_session[f"recall_any@{k}"]
+        )
+        nd = sum(metrics_session[f"ndcg_any@{k}"]) / len(
+            metrics_session[f"ndcg_any@{k}"]
+        )
         print(f"    Recall@{k:2}: {ra:.3f}    NDCG@{k:2}: {nd:.3f}")
 
     print("\n  TURN-LEVEL METRICS:")
@@ -3225,7 +3322,9 @@ def run_benchmark(
             real_cache = {k: v for k, v in diary_cache.items() if v is not None}
             with open(diary_cache_file, "w") as f:
                 json.dump(real_cache, f)
-            print(f"  Diary cache saved: {len(real_cache)} sessions → {diary_cache_file}")
+            print(
+                f"  Diary cache saved: {len(real_cache)} sessions → {diary_cache_file}"
+            )
         except Exception as e:
             print(f"  Warning: could not save diary cache: {e}")
 
@@ -3250,7 +3349,9 @@ if __name__ == "__main__":
         default="session",
         help="Retrieval granularity (default: session)",
     )
-    parser.add_argument("--limit", type=int, default=0, help="Limit to N questions (0 = all)")
+    parser.add_argument(
+        "--limit", type=int, default=0, help="Limit to N questions (0 = all)"
+    )
     parser.add_argument(
         "--mode",
         choices=[

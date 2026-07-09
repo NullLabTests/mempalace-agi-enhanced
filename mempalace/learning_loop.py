@@ -1,4 +1,3 @@
-
 import random
 import time
 
@@ -20,6 +19,7 @@ controller = BehaviorController()
 
 history = []
 
+
 def simulate_event(action):
     # simple environment simulation
     if action == "consolidate":
@@ -27,11 +27,11 @@ def simulate_event(action):
     elif action == "expand":
         return "[AGI] success: expanded knowledge"
     elif action == "experiment":
-        return random.choice([
-            "[AGI] success: new pattern found",
-            "[AGI] error: instability detected"
-        ])
+        return random.choice(
+            ["[AGI] success: new pattern found", "[AGI] error: instability detected"]
+        )
     return "[AGI] idle"
+
 
 for i in range(1, 21):
     total_score = critic.summary()
