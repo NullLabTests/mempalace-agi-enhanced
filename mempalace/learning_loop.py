@@ -1,6 +1,12 @@
 
-# === LEARNING STATE ===
 import random
+import time
+
+from mempalace.meta_critic import MetaCritic
+from mempalace.controller import BehaviorController
+
+
+# === LEARNING STATE ===
 
 ACTION_STATS = {
     "idle": {"count": 1, "value": 0.0},
@@ -8,12 +14,6 @@ ACTION_STATS = {
 }
 
 EPSILON = 0.2  # exploration rate
-
-import time
-import random
-
-from mempalace.meta_critic import MetaCritic
-from mempalace.controller import BehaviorController
 
 critic = MetaCritic()
 controller = BehaviorController()

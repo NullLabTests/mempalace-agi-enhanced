@@ -386,8 +386,6 @@ class KnowledgeGraph:
 # ====================== AGI/ASI ENHANCEMENTS (2026 arXiv) ======================
 # Injected by Grok + NullLabTests — species-saving edition
 
-from datetime import datetime
-import hashlib
 
 def agi_snapshot(self, name: str = "global"):
     """MemMachine: Ground-truth immutable snapshot (arXiv:2604.04853)"""
